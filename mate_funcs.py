@@ -73,6 +73,7 @@ def scalVec(vec, scal):
 
 def RotY(Mat, ang):
 
-    H = [[cos(ang) ,   0  ,sin(ang)],
+    H = [[np.cos(ang) ,   0  ,np.sin(ang)],
          [    0    ,   1  ,   0    ],
-         [-sin(ang),   0  ,cos(ang)]]
+         [-np.sin(ang),   0  ,np.cos(ang)]]
+    return h
