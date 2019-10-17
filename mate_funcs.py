@@ -77,3 +77,10 @@ def RotY(Mat, ang):
          [    0    ,   1  ,   0    ],
          [-np.sin(ang),   0  ,np.cos(ang)]]
     return h
+
+def RotY(Mat, ang):
+
+    H = [[np.cos(ang) ,   0  ,np.sin(ang)],
+         [    0    ,   1  ,   0    ],
+         [-np.sin(ang),   0  ,np.cos(ang)]]
+    return h
