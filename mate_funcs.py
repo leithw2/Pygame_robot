@@ -97,12 +97,14 @@ def Rotz(mat, ang):
 
 def translation(mat, vec):
 
-    print(mat)
-    print(vec)
-    H =  np.matrix([[1,0,0,vec[0]],
+    Hs =  np.matrix([[1,0,0,vec[0]],
                     [0,1,0,vec[1]],
                     [0,0,1,vec[2]],
                     [0,0,0,  1   ]])
-    print(H)
+    print (Hs)
+    print (mat)
+    #print (mat.dot(Hs))
+    print (np.transpose(Hs.dot(np.transpose(mat))))
+    #print (Hs.dot(np.transpose(mat)))
 
-    return mat.dot(H)
+    return np.transpose(Hs.dot(np.transpose(mat)))

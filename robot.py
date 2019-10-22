@@ -7,15 +7,14 @@ import pygame
 class Robot():
 
     def __init__(self,surface ,name='robot' ,pos=[0.0 ,0.0, 0.0 ], visible = True ):
-        pos = np.matrix([pos[0], pos[1], pos[2], 0])
+        pos = np.matrix([pos[0], pos[1], pos[2], 1])
         self.name = name
-        self.pos = Trans(pos, [int(surface.get_width()/2),int(surface.get_height()/2),0])
+        self.pos = translation(pos, [int(surface.get_width()/2),int(surface.get_height()/2),0])
         self.surface = surface
         self.visible = visible
 
     def translation(self, vector):
         pass
-
 
     def getPos(self):
         return self.pos
@@ -55,6 +54,8 @@ class DDR(Robot):
         self.radious = radious
 
     def draw(self):
-        pygame.draw.circle(self.surface, self.color, self.pos, self.radious)
-        pygame.draw.line(self.surface,[0,0,0] ,self.pos,[self.pos[0] + self.radious,self.pos[1]] ,5)
+        position = [self.pos.item(0),self.pos.item(1)]
+        end_line = [self.pos.item(0) + self.radious,self.pos.item(1)]
+        pygame.draw.circle(self.surface, self.color, position, self.radious)
+        pygame.draw.line(self.surface,[0,0,0] , position ,end_line ,3)
         return True

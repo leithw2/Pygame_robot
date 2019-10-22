@@ -19,14 +19,14 @@ def main():
     running = True
     center1 = screen_width/2
     center2 = screen_height/2
-    robot1 = DDR(surface,'popo',[int(screen_width/2),int(screen_height/2),0],20,[0,255,255])
-    robot2 = DDR(surface,'popo',[int(screen_width/4),int(screen_height/2),0],20,[0,155,155])
+    robot1 = DDR(surface,'popo',[0,0,0],20,[0,255,255])
+    robot2 = DDR(surface,'popo',[50,20,0],20,[0,155,155])
 
     while running:
 
         print (robot1.getPos())
-        #robot1.draw()
-        #robot2.draw()
+        robot1.draw()
+        robot2.draw()
         pygame.display.flip()
 
         # event handling, gets all event from the event queue
