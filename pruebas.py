@@ -5,18 +5,8 @@ import numpy as np
 from pygame import *
 from mate_funcs import *
 
-vector1 = [100,100]
-vector2 = deg_to_Rect([141.4213,np.pi/4])
+move = [320,240,0]
 
-# print (sumVec(vector1, vector2))
-# print (scalVec(vector1, 2))
-#
-# print (dot(10, 20, 2))
-#
-#
-# print (dot2(vector1, vector2))
+vector2 = np.matrix([0,0,0,0])
 
-print (vector1)
-print (vector2)
-
-print (rotRadTas2(vector1,np.pi*.25, [0,0]))
+print (translation(vector2,move))

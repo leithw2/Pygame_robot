@@ -71,16 +71,38 @@ def scalVec(vec, scal):
 
 ''' -----------------------3D----------------------'''
 
-def RotY(Mat, ang):
+def RotX(mat, ang):
 
-    H = [[np.cos(ang) ,   0  ,np.sin(ang)],
-         [    0    ,   1  ,   0    ],
-         [-np.sin(ang),   0  ,np.cos(ang)]]
-    return h
+    H =  np.matrix([[1              ,0              ,0              ,0],
+                    [0              ,(sym.cos(ang)) ,(-sym.sin(ang)),0],
+                    [0              ,(sym.sin(ang)) ,(sym.cos(ang)) ,0],
+                    [0              ,0              ,0              ,1]])
+    return mat.dot(H)
 
-def RotY(Mat, ang):
+def RotY(mat, ang):
 
-    H = [[np.cos(ang) ,   0  ,np.sin(ang)],
-         [    0    ,   1  ,   0    ],
-         [-np.sin(ang),   0  ,np.cos(ang)]]
-    return h
+    H =  np.matrix([[(sym.cos(ang)) ,0              ,(sym.sin(ang)) ,0],
+                    [0              ,1              ,0              ,0],
+                    [(-sym.sin(ang)),0              ,(sym.cos(ang)) ,0],
+                    [0              ,0              ,0              ,1]])
+    return mat.dot(H)
+
+def Rotz(mat, ang):
+
+    H =  np.matrix([[(sym.cos(ang)) ,(-sym.sin(ang)),0              ,0],
+                    [(sym.sin(ang)) ,(sym.cos(ang)) ,0              ,0],
+                    [0              ,0              ,1              ,0],
+                    [0              ,0              ,0              ,1]])
+    return mat.dot(H)
+
+def translation(mat, vec):
+
+    print(mat)
+    print(vec)
+    H =  np.matrix([[1,0,0,vec[0]],
+                    [0,1,0,vec[1]],
+                    [0,0,1,vec[2]],
+                    [0,0,0,  1   ]])
+    print(H)
+
+    return mat.dot(H)
