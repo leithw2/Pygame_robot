@@ -73,38 +73,77 @@ def scalVec(vec, scal):
 
 def RotX(mat, ang):
 
-    H =  np.matrix([[1              ,0              ,0              ,0],
-                    [0              ,(sym.cos(ang)) ,(-sym.sin(ang)),0],
-                    [0              ,(sym.sin(ang)) ,(sym.cos(ang)) ,0],
+    Hs =  np.matrix([[1              ,0              ,0              ,0],
+                    [0              ,(np.cos(ang)) ,(-np.sin(ang)),0],
+                    [0              ,(np.sin(ang)) ,(np.cos(ang)) ,0],
                     [0              ,0              ,0              ,1]])
     return mat.dot(H)
 
 def RotY(mat, ang):
 
-    H =  np.matrix([[(sym.cos(ang)) ,0              ,(sym.sin(ang)) ,0],
+    Hs =  np.matrix([[(np.cos(ang)) ,0              ,(np.sin(ang)) ,0],
                     [0              ,1              ,0              ,0],
-                    [(-sym.sin(ang)),0              ,(sym.cos(ang)) ,0],
+                    [(-np.sin(ang)),0              ,(np.cos(ang)) ,0],
                     [0              ,0              ,0              ,1]])
     return mat.dot(H)
 
 def Rotz(mat, ang):
 
-    H =  np.matrix([[(sym.cos(ang)) ,(-sym.sin(ang)),0              ,0],
-                    [(sym.sin(ang)) ,(sym.cos(ang)) ,0              ,0],
-                    [0              ,0              ,1              ,0],
-                    [0              ,0              ,0              ,1]])
-    return mat.dot(H)
+    Hs =  np.matrix([[(np.cos(ang)) ,(-np.sin(ang)),0                ,0],
+                     [(np.sin(ang)) ,( np.cos(ang)),0                ,0],
+                     [0              ,0            ,1                ,0],
+                     [0              ,0            ,0                ,1]])
 
-def translation(mat, vec):
 
-    Hs =  np.matrix([[1,0,0,vec[0]],
-                    [0,1,0,vec[1]],
-                    [0,0,1,vec[2]],
-                    [0,0,0,  1   ]])
-    print (Hs)
-    print (mat)
-    #print (mat.dot(Hs))
-    print (np.transpose(Hs.dot(np.transpose(mat))))
-    #print (Hs.dot(np.transpose(mat)))
 
     return np.transpose(Hs.dot(np.transpose(mat)))
+
+def MatRotZ(ang):
+
+    H =  np.matrix([[(np.cos(ang)) ,(np.sin(ang)),0                ,0],
+                    [(-np.sin(ang)) ,( np.cos(ang)),0                ,0],
+                    [0              ,0            ,1                ,0],
+                    [0              ,0            ,0                ,1]])
+    return H
+
+def MatTra(vec):
+
+    H =  np.matrix([[1,0,0,vec[0]],
+                     [0,1,0,vec[1]],
+                     [0,0,1,vec[2]],
+                     [0,0,0,  1   ]])
+    return H
+
+
+
+def translation(mat, vec):
+    Hs =  np.matrix([[1,0,0,vec.item(0)],
+                    [0,1,0,vec.item(1)],
+                    [0,0,1,vec.item(2)],
+                    [0,0,0,  1   ]])
+
+    res = np.transpose(Hs.dot(np.transpose(mat)))
+    #print (res)
+    return res
+
+def translation2(mat, ang, vec):
+
+    mat = np.transpose(mat)
+
+    Hs =  np.matrix([[(np.cos(ang)) ,(-np.sin(ang)),0                ,0],
+                     [(np.sin(ang)) ,( np.cos(ang)),0                ,0],
+                     [0              ,0            ,1                ,0],
+                     [0              ,0            ,0                ,1]])
+
+    Hs2 = np.matrix([[1,0,0,vec.item(0)],
+                     [0,1,0,vec.item(1)],
+                     [0,0,1,vec.item(2)],
+                     [0,0,0,       1   ]])
+
+    Hs3 = Hs2.dot(Hs)
+    #print(Hs3)
+    Hs3 = Hs2
+
+    res = np.transpose(Hs3.dot(mat))
+    #print (res)
+    return res

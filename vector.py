@@ -89,6 +89,7 @@ def main():
     vectag1 = [[0],[0]]
     vectag2 = [[0],[0]]
 
+
     #print (os.getcwd())
 
     if not pygame.image.get_extended():
@@ -152,9 +153,10 @@ def main():
     actualAng1 =0
     actualAng2 =0
 
+
+
     # main loop
     while running:
-
         # check if the smiley is still on screen, if not change direction
         if xpos>screen_width-64 or xpos<0:
             step_x = -step_x
@@ -262,12 +264,8 @@ def main():
         screen.blit(vec2Angle, textRect24)
 
         #print (str(vec2.get_end()))
-
         # and update the screen (don't forget that!)
         pygame.display.flip()
-
-
-
         pygame.time.delay(10)
 
 #call the "main" function if running this script
