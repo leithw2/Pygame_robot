@@ -147,3 +147,18 @@ def translation2(mat, ang, vec):
     res = np.transpose(Hs3.dot(mat))
     #print (res)
     return res
+
+def prod_Hamilton(a, b):
+
+    res = [(a[0]*b[0] - a[1]*b[1] - a[2]*b[2] - a[3]*b[3]),
+           (a[0]*b[1] + a[1]*b[0] + a[2]*b[3] + a[3]*b[2]),
+           (a[0]*b[2] - a[1]*b[3] + a[2]*b[0] + a[3]*b[1]),
+           (a[0]*b[3] + a[1]*b[2] - a[2]*b[1] + a[3]*b[0])]
+
+    return res
+
+def R_quaternion(q, p):
+
+    q_1 = [q[0], -q[1], -q[2], -q[3]]
+    res1 = prod_Hamilton(q, p)
+    res = prod_Hamilton(res1, q_1)

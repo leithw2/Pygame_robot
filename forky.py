@@ -14,8 +14,8 @@ class vector_coordinate():
 
     def __init__(self,screen , color, init, end):
         self.screen = screen
-        self.init = init
-        self.end = end
+        self.init = [init[0],-init[1],0,1]
+        self.end = [end[0],-end[1],0,1]
         self.color = color
 
         self.endRelative = [end[0]+init[0],end[1]+init[1]]
@@ -27,8 +27,8 @@ class vector_coordinate():
         return self.center
 
     def draw(self):
-        init2 = [self.init[0] + self.screen.get_width()/2, self.init[1] + self.screen.get_height()/2]
-        end2 = [self.end[0] + self.screen.get_width()/2, self.screen.get_height()/2+ self.end[1]]
+        init2 = [self.init[0] + self.screen.get_width()/2,self.screen.get_height()/2 - self.init[1]]
+        end2 = [self.end[0] + self.screen.get_width()/2, self.screen.get_height()/2 - self.end[1]]
         pygame.draw.line(self.screen,self.color ,init2,end2 ,5)
 
     def set_init(self, vec):
@@ -54,6 +54,10 @@ def main():
     dir = 0
     dir2 = 0
     dir3 = 0
+    dir4 = 0
+    dir5 = 0
+    dir6 = 0
+    dir7 = 0
 
     if not pygame.image.get_extended():
         raise SystemExit("Sorry, extended image module required")
@@ -67,15 +71,19 @@ def main():
     screen_height = 480
 
     screen = pygame.display.set_mode((screen_width,screen_height))
+    head_image = pygame.image.load("01_image.png").convert()
+    head_image.set_colorkey((255,0,255))
 
-    vec  = vector_coordinate(screen, [0,0,255], [0,0], [0,0])
-    base = vector_coordinate(screen, [0,0,255], [0,0], [0,50])
-    body = vector_coordinate(screen, [0,0,255], [0,0], [0,50])
-    
+    base     = vector_coordinate(screen, [0,0,255], [0,0], [0,50])
+    body     = vector_coordinate(screen, [0,255,255], [0,50], [0,100])
+    forearmR = vector_coordinate(screen, [0,0,255], [0,50], [0,100])
+    armR     = vector_coordinate(screen, [0,255,0], [0,50], [0,100])
+    forearmL = vector_coordinate(screen, [0,0,255], [0,50], [0,100])
+    armL     = vector_coordinate(screen, [0,255,0], [0,50], [0,100])
+    handL    = vector_coordinate(screen, [255,0,0], [0,50], [0,100])
+    handR    = vector_coordinate(screen, [255,0,0], [0,50], [0,100])
+    head     = vector_coordinate(screen, [255,0,0], [0,50], [0,100])
 
-    vec2 = vector_coordinate(screen, [0,255,0], [0,0], [0,0])
-
-    vec3 = vector_coordinate(screen, [255,0,0], [0,0], [0,0])
 
     pygame.display.set_caption("Forky Robot")
 
@@ -113,72 +121,89 @@ def main():
         keystate = pygame.key.get_pressed()
 
         #handle player input
-        dir += keystate[K_RIGHT] - keystate[K_LEFT]
-        dir2 += keystate[K_DOWN] - keystate[K_UP]
+        dir  += keystate[K_RIGHT] - keystate[K_LEFT]
+        dir2 += keystate[K_DOWN]  - keystate[K_UP]
         dir3 += keystate[K_a]     - keystate[K_d]
+        dir4 += keystate[K_w]     - keystate[K_s]
+        dir5 += keystate[K_q]     - keystate[K_e]
+        dir6 += keystate[K_i]     - keystate[K_k]
+        dir7 += keystate[K_j]     - keystate[K_l]
 
         #vec.set_end(deg_to_Rect([l1,dir*.01]))
 
-        mat = MatRotZ((dir*np.pi)/180).dot(MatTra([100,0,0,1]))
-        mat2 = MatRotZ((dir2*np.pi)/180).dot(MatTra([100,0,0,1]))
-        mat3 = MatRotZ((dir3*np.pi)/180).dot(MatTra([100,0,0,1]))
+        mat  = MatRotZ((-90*np.pi)/180).dot(MatTra([50,0,0,1]))
+        mat1 = MatRotZ((dir5*np.pi)/180).dot(MatTra([50,0,0,1]))
+
+        mat1_1 = MatRotZ((dir*np.pi)/180).dot(MatTra([50,0,0,1]))
+        mat1_1_1 = MatRotZ((dir2*np.pi)/180).dot(MatTra([50,0,0,1]))
+        mat1_1_1_1 = MatRotZ((dir6*np.pi)/180).dot(MatTra([30,0,0,1]))
+
+        mat1_2 = MatRotZ((dir3*np.pi)/180).dot(MatTra([50,0,0,1]))
+        mat1_2_1 = MatRotZ((dir4*np.pi)/180).dot(MatTra([50,0,0,1]))
+        mat1_2_1_1 = MatRotZ((dir7*np.pi)/180).dot(MatTra([30,0,0,1]))
+
+        mat1_3 = MatRotZ((0*np.pi)/180).dot(MatTra([50,0,0,1]))
 
         vectest = np.matrix([0,0,0,1])
-        endpos = mat.dot(np.transpose(vectest))
-        endpos2 = mat.dot(mat2).dot(np.transpose(vectest))
-        endpos3 = mat.dot(mat2).dot(mat3).dot(np.transpose(vectest))
-        print (endpos)
 
-        vec.set_end(endpos)
-        vec2.set_init(endpos)
-        vec2.set_end(endpos2)
-        vec3.set_init(endpos2)
-        vec3.set_end(endpos3)
+        endpos = mat.dot(np.transpose(vectest))
+        endpos2 = mat.dot(mat1).dot(np.transpose(vectest))
+
+        forearm_R_end = mat.dot(mat1).dot(mat1_1).dot(np.transpose(vectest))
+        arm_R_end = mat.dot(mat1).dot(mat1_1).dot(mat1_1_1).dot(np.transpose(vectest))
+        hand_R_end = mat.dot(mat1).dot(mat1_1).dot(mat1_1_1).dot(mat1_1_1_1).dot(np.transpose(vectest))
+
+        forearm_L_end = mat.dot(mat1).dot(mat1_2).dot(np.transpose(vectest))
+        arm_L_end = mat.dot(mat1).dot(mat1_2).dot(mat1_2_1).dot(np.transpose(vectest))
+        hand_L_end = mat.dot(mat1).dot(mat1_2).dot(mat1_2_1).dot(mat1_2_1_1).dot(np.transpose(vectest))
+
+        head_end = mat.dot(mat1).dot(mat1_3).dot(np.transpose(vectest))
+
+        base.set_init(np.transpose(vectest))
+        base.set_end(endpos)
+        body.set_init(endpos)
+        body.set_end(endpos2)
+
+        forearmR.set_init(endpos2)
+        forearmR.set_end(forearm_R_end)
+        armR.set_init(forearm_R_end)
+        armR.set_end(arm_R_end)
+        handR.set_init(arm_R_end)
+        handR.set_end(hand_R_end)
+
+        forearmL.set_init(endpos2)
+        forearmL.set_end(forearm_L_end)
+        armL.set_init(forearm_L_end)
+        armL.set_end(arm_L_end)
+        handL.set_init(arm_L_end)
+        handL.set_end(hand_L_end)
+
+        head.set_init(endpos2)
+        head.set_end(head_end)
+
 
         coord = 100
         pygame.draw.line(screen,[255,255,255] ,[screen_width/2,screen_height/2-coord],[screen_width/2,screen_height/2+coord] ,2)
         pygame.draw.line(screen,[255,255,255] ,[screen_width/2-coord,screen_height/2],[screen_width/2+coord,screen_height/2] ,2)
 
-        vec.draw()
-        vec2.draw()
-        vec3.draw()
 
+        base.draw()
+        body.draw()
 
-        vec1Init = font.render("Init:" +str(vec.get_init()), True, [0,0,255])
-        vec1End = font.render("End: "+ str(vec.get_end()), True, [0,0,255])
-        vec1Mag = font.render("Magnitude: " + str(vec.get_mag()), True, [0,0,255])
-        #vec1Angle = font.render("angle: " + str(vec.get_angle()), True, [0,0,255])
+        forearmR.draw()
+        armR.draw()
+        handR.draw()
 
-        textRect1 = vec1Init.get_rect()
-        textRect2 = vec1End.get_rect().move([0,20])
-        textRect3 = vec1Mag.get_rect().move([0,40])
-        #textRect4 = vec1Angle.get_rect().move([0,60])
+        forearmL.draw()
+        armL.draw()
+        handL.draw()
 
+        head.draw()
 
-        screen.blit(vec1Init, textRect1)
-        screen.blit(vec1End, textRect2)
-        screen.blit(vec1Mag, textRect3)
-        #screen.blit(vec1Angle, textRect4)
+        image = head_image
+        #image = pygame.transform.rotate(head_image, dir)
+        #screen.blit(image,[head.get_end()[0]+screen_width/2 - image.get_width()/2 , -head.get_end()[1]+screen_height/2 - image.get_height()/2 ])
 
-
-
-        vec2Init = font.render("Init:" +str(vec2.get_init()), True, [0,255,0])
-        #vec2End = font.render("End: " +str(vec2.get_endRelative()), True, [0,255,0])
-        vec2Mag = font.render("Magnitude: " +str(vec2.get_mag()), True, [0,255,0])
-        #vec2Angle = font.render("angle: " + str(vec2.get_angRelative()), True, [0,255,0])
-
-        textRect21 = vec2Init.get_rect().move([0,100])
-        #textRect22 = vec2End.get_rect().move([0,120])
-        textRect23 = vec2Mag.get_rect().move([0,140])
-        #textRect24 = vec2Angle.get_rect().move([0,160])
-
-
-        screen.blit(vec2Init, textRect21)
-        #screen.blit(vec2End, textRect22)
-        screen.blit(vec2Mag, textRect23)
-        #screen.blit(vec2Angle, textRect24)
-
-        #print (str(vec2.get_end()))
         # and update the screen (don't forget that!)
         pygame.display.flip()
         pygame.time.delay(10)
