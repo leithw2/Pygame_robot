@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
+
 import pygame
 import numpy as np
-
 from pygame import *
+import sys
+from os import path
+sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 from mate_funcs import *
-import os.path
 
 SCREENRECT     = Rect(0, 0, 640, 480)
 l1= 150
@@ -71,8 +73,6 @@ def main():
     screen_height = 480
 
     screen = pygame.display.set_mode((screen_width,screen_height))
-    head_image = pygame.image.load("01_image.png").convert()
-    head_image.set_colorkey((255,0,255))
 
     base     = vector_coordinate(screen, [0,0,255], [0,0], [0,50])
     body     = vector_coordinate(screen, [0,255,255], [0,50], [0,100])
@@ -199,10 +199,6 @@ def main():
         handL.draw()
 
         head.draw()
-
-        image = head_image
-        #image = pygame.transform.rotate(head_image, dir)
-        #screen.blit(image,[head.get_end()[0]+screen_width/2 - image.get_width()/2 , -head.get_end()[1]+screen_height/2 - image.get_height()/2 ])
 
         # and update the screen (don't forget that!)
         pygame.display.flip()

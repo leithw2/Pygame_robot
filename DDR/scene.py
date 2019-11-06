@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 import pygame
 import numpy as np
-from mate_funcs import *
-
 from pygame import *
+import sys
+from os import path
+sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 from mate_funcs import *
 from robot import *
-import os.path
 
 def main():
     pygame.init()

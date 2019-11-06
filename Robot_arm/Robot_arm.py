@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 import pygame
 import numpy as np
-
 from pygame import *
+import sys
+from os import path
+sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 from mate_funcs import *
-import os.path
+
+# First approach
 
 SCREENRECT     = Rect(0, 0, 640, 480)
 l1= 150
 l2= 100
 
-class vector_coordinate():
+class link():
 
     def __init__(self,screen , color, init, end):
         self.screen = screen
@@ -111,28 +114,16 @@ def main():
 
     screen = pygame.display.set_mode((screen_width,screen_height))
 
-    vec = vector_coordinate(screen,[0,0,255] ,(0,0) ,(l1,0))
+    vec = link(screen,[0,0,255] ,(0,0) ,(l1,0))
 
-    vec2 = vector_coordinate(screen,[0,255,0] ,vec.get_end() ,(l2,0))
+    vec2 = link(screen,[0,255,0] ,vec.get_end() ,(l2,0))
 
     vecs = []
 
-    logo = pygame.image.load("logo32x32.png")
-    pygame.display.set_icon(logo)
     pygame.display.set_caption("minimal program")
-    bgd_image = pygame.image.load("background.png")
-    image = pygame.image.load("01_image.png")
-
-    bgd_image = bgd_image.convert()
-
-    bgd_image.set_alpha(255)
-    image.set_alpha(255)
-
-    logo.set_alpha(255)
 
     xpos =110
     ypos = 50
-    screen.blit(image, (xpos,ypos))
     # define a variable to control the main loop
     running = True
 
@@ -170,7 +161,6 @@ def main():
         #(just blit the background over anything on screen)
         #screen.fill((xpos/640*255,ypos/480*255,0))
         screen.fill((0,0,0))
-        image.set_alpha(xpos/640*255)
 
         # event handling, gets all event from the event queue
         for event in pygame.event.get():

@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 import numpy as np
-from mate_funcs import *
-from pygame import *
 import pygame
 
 class Model():
