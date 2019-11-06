@@ -51,9 +51,9 @@ def main():
     global l1
     global l2
 
-    dir = 0
+    dir  = 45
     dir2 = 0
-    dir3 = 0
+    dir3 = -45
     dir4 = 0
     dir5 = 0
     dir6 = 0

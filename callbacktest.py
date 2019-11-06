@@ -9,7 +9,7 @@ def square(i):
     return i * i
 
 def processor(process, times, report_interval, callback):
-    print("Entered processor(): times = {}, report_interval = {}, callback = {}".format(
+    print("Entered processor): times = {}, report_interval = {}, callback = {}".format(
     times, report_interval, callback.func_name))
     # Can also use callback.__name__ instead of callback.func_name in line above.
     result = 0
