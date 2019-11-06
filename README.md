@@ -1,13 +1,25 @@
 # Pygame_robot
 
 ## Forky
-simulation in Pygame of a Robot Humanoid torso.
+Simulation in Pygame of a Robot Humanoid tors0.
+
+### TODO:
+* Collisions
+* Collision avoidance
 
 ## DDR
-simulation in Pygame of a Robot Humanoid torso.
+Simulation in Pygame of a DDR Robot.
+
+### TODO:
+* Draw Map
+* Collisions
+* Collision avoidance
 
 ## Robot arm
-simulation in Pygame of a Robot Humanoid torso.
+Simulation in Pygame of a Robot_arm
+
+### TODO:
+* 3 DoF
 
 ## Dependencies
 ```
