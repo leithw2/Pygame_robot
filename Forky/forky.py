@@ -14,13 +14,46 @@ l2= 100
 
 class vector_coordinate():
 
-    def __init__(self,screen , color, init, end):
+    def __init__(self,screen , color, init, end, name):
+
         self.screen = screen
         self.init = [init[0],-init[1],0,1]
         self.end = [end[0],-end[1],0,1]
         self.color = color
+        self.name = name
+
+        self.target = 0
+        self.direction = 1
+        self.ang = 0
+        self.range = [0,0]
+
+        self.ouch = False
+
+        self.surface_mask = pygame.Surface((self.screen.get_width(),self.screen.get_height()))
+        self.surface_mask.set_colorkey((255,255,255))
+        self.surface_mask.fill((255,255,255))
+        self.mask = pygame.mask.from_surface(self.surface_mask)
 
         self.endRelative = [end[0]+init[0],end[1]+init[1]]
+
+
+    def get_ang(self):
+        return self.ang
+
+    def set_ang(self, ang):
+        self.ang = ang
+
+    def get_target(self):
+        return self.target
+
+    def set_target(self, target):
+        self.target = target
+
+    def get_direction(self):
+        return self.direction
+
+    def set_direction(self, direction):
+        self.direction = direction
 
     def set_center(self,vec):
         self.center
@@ -32,6 +65,10 @@ class vector_coordinate():
         init2 = [self.init[0] + self.screen.get_width()/2,self.screen.get_height()/2 - self.init[1]]
         end2 = [self.end[0] + self.screen.get_width()/2, self.screen.get_height()/2 - self.end[1]]
         pygame.draw.line(self.screen,self.color ,init2,end2 ,5)
+
+        self.surface_mask.fill((255,255,255))
+        pygame.draw.line(self.surface_mask,self.color ,init2,end2 ,5)
+        self.mask = pygame.mask.from_surface(self.surface_mask)
 
     def set_init(self, vec):
         self.init = vec
@@ -48,66 +85,138 @@ class vector_coordinate():
     def get_mag(self):
         return magVec(self.get_end())
 
-def main():
-    # initialize the pygame module
-    global l1
-    global l2
+    def set_ouch(self, ouch):
+        self.ouch = ouch
 
-    dir  = 45
-    dir2 = 0
-    dir3 = -45
-    dir4 = 0
-    dir5 = 0
-    dir6 = 0
-    dir7 = 0
+    def get_ouch(self):
+        return self.ouch
 
-    if not pygame.image.get_extended():
-        raise SystemExit("Sorry, extended image module required")
+    def get_range(self):
+        return self.range
 
-    #option = int(input("option 0 = demo; option 1 = manual "))
-    option = 0
-    pygame.init()
+    def set_range(self,vec):
+        self.range = [vec[0], vec[1]]
 
-    # create a surface on screen that has the size of 240 x 180
-    screen_width = 640
-    screen_height = 480
+    def get_name(self):
+        return self.name
 
-    screen = pygame.display.set_mode((screen_width,screen_height))
+class scene():
+    def __init__(self):
+        # initialize the pygame module
+        global l1
+        global l2
+        self.running = True
 
-    base     = vector_coordinate(screen, [0,0,255], [0,0], [0,50])
-    body     = vector_coordinate(screen, [0,255,255], [0,50], [0,100])
-    forearmR = vector_coordinate(screen, [0,0,255], [0,50], [0,100])
-    armR     = vector_coordinate(screen, [0,255,0], [0,50], [0,100])
-    forearmL = vector_coordinate(screen, [0,0,255], [0,50], [0,100])
-    armL     = vector_coordinate(screen, [0,255,0], [0,50], [0,100])
-    handL    = vector_coordinate(screen, [255,0,0], [0,50], [0,100])
-    handR    = vector_coordinate(screen, [255,0,0], [0,50], [0,100])
-    head     = vector_coordinate(screen, [255,0,0], [0,50], [0,100])
+        self.dir = 0
+
+        #option = int(input("option 0 = demo; option 1 = manual "))
+        option = 0
+        pygame.init()
+
+        # create a surface on screen that has the size of 240 x 180
+        self.screen_width = 640
+        self.screen_height = 480
+
+        self.screen = pygame.display.set_mode((self.screen_width,self.screen_height))
+        #self.screen = pygame.display.set_mode()
+        self.screen.fill((255,255,255))
+        self.screen.set_colorkey((255,255,255))
+
+        self.base     = vector_coordinate(self.screen, [0,0,255], [0,0], [0,50],"base")
+        self.body     = vector_coordinate(self.screen, [0,255,255], [0,50], [0,100], "body")
+        self.forearmR = vector_coordinate(self.screen, [0,0,255], [0,50], [0,100],"forearmR")
+        self.armR     = vector_coordinate(self.screen, [0,255,0], [0,50], [0,100],"armR")
+        self.forearmL = vector_coordinate(self.screen, [0,0,255], [0,50], [0,100],"forearmL")
+        self.armL     = vector_coordinate(self.screen, [0,255,0], [0,50], [0,100],"armL")
+        #handL    = vector_coordinate(screen, [255,0,0], [0,50], [0,100])
+        #handR    = vector_coordinate(screen, [255,0,0], [0,50], [0,100])
+        self.neck     = vector_coordinate(self.screen, [255,0,0], [0, 0], [0,30],"head")
+
+        self.headR1   = vector_coordinate(self.screen, [255,0,0], [0, 0], [0,30],"head")
+        self.headR2   = vector_coordinate(self.screen, [255,0,0], [0, 0], [0,30],"head")
+        self.headL1   = vector_coordinate(self.screen, [255,0,0], [0, 0], [0,30],"head")
+        self.headL2   = vector_coordinate(self.screen, [255,0,0], [0, 0], [0,30],"head")
+
+        self.head   = vector_coordinate(self.screen, [255,0,0], [0, 0], [0,30],"head")
+
+        #self.rect = pygame.rect()
+        self.vectors = []
 
 
-    pygame.display.set_caption("Forky Robot")
+        self.base.set_ang(0)
+        self.base.set_target(0)
 
-    xpos = 0
-    ypos = 0
-    running = True
+        self.body.set_ang(0)
+        self.body.set_target(0)
 
-    step_x =1
-    step_y =1
-    x=4
-    y=4
+        self.forearmR.set_ang(90)
+        self.forearmR.set_target(80)
+        self.armR.set_ang(-90)
+        self.armR.set_target(-90)
 
-    font = pygame.font.Font('freesansbold.ttf', 14)
+        self.forearmL.set_ang(-90)
+        self.forearmL.set_target(-90)
+        self.armL.set_ang(90)
+        self.armL.set_target(90)
 
-    pygame.display.flip()
-    speed1 = 0
-    speed2 = 0
-    actualAng1 =0
-    actualAng2 =0
+        self.neck.set_ang(-90)
 
-    # main loop
-    while running:
+        self.headR1.set_ang(-90)
+        self.headR2.set_ang(-90)
+        self.headL1.set_ang(-90)
+        self.headL2.set_ang(-90)
 
-        screen.fill((0,0,0))
+        self.head.set_ang(-90)
+
+######################################
+        ####
+        self.base.set_range([-170,170])
+        self.body.set_range([-170,170])
+
+        self.forearmR.set_range([-170,170])
+        self.armR.set_range([-170,170])
+
+        self.forearmL.set_range([-170,170])
+        self.armL.set_range([-170,170])
+
+        self.neck.set_range([-170,170])
+
+        self.headR1.set_range([-170,170])
+        self.headR2.set_range([-170,170])
+        self.headL1.set_range([-170,170])
+        self.headL2.set_range([-170,170])
+
+        self.head.set_range([-170,170])
+#######################################
+        self.vectors.append(self.base)
+
+        self.vectors.append(self.body)
+
+        self.vectors.append(self.forearmR)
+        self.vectors.append(self.armR)
+        self.vectors.append(self.forearmL)
+        self.vectors.append(self.armL)
+
+
+        self.vectors.append(self.neck)
+
+        self.vectors.append(self.headR1)
+        self.vectors.append(self.headR2)
+        self.vectors.append(self.headL1)
+        self.vectors.append(self.headL2)
+
+        self.vectors.append(self.head)
+
+
+        pygame.display.set_caption("Forky Robot")
+
+        # main loop
+
+    def draw(self):
+
+        #pygame.display.flip()
+
+        self.screen.fill((0,0,0))
         # event handling, gets all event from the event queue
         for event in pygame.event.get():
             # only do something if the event is of type QUIT
@@ -116,33 +225,56 @@ def main():
 
             if event.type == pygame.QUIT:
                 # change the value to False, to exit the main loop
-                running = False
+                self.running = False
+            #print(event.type)
 
-        keystate = pygame.key.get_pressed()
+        self.keystate = pygame.key.get_pressed()
+
+        #self.dir  += self.keystate[K_RIGHT] - self.keystate[K_LEFT]
 
         #handle player input
-        dir  += keystate[K_RIGHT] - keystate[K_LEFT]
-        dir2 += keystate[K_DOWN]  - keystate[K_UP]
-        dir3 += keystate[K_a]     - keystate[K_d]
-        dir4 += keystate[K_w]     - keystate[K_s]
-        dir5 += keystate[K_q]     - keystate[K_e]
-        dir6 += keystate[K_i]     - keystate[K_k]
-        dir7 += keystate[K_j]     - keystate[K_l]
+        '''
+        self.dir  += self.keystate[K_RIGHT] - self.keystate[K_LEFT]
+        self.dir2 += self.keystate[K_DOWN]  - self.keystate[K_UP]
+        self.dir3 += self.keystate[K_a]     - self.keystate[K_d]
+        self.dir4 += self.keystate[K_w]     - self.keystate[K_s]
+        self.dir5 += self.keystate[K_q]     - self.keystate[K_e]
+        self.dir6 += self.keystate[K_i]     - self.keystate[K_k]
+        self.dir7 += self.keystate[K_j]     - self.keystate[K_l]
+        '''
 
-        #vec.set_end(deg_to_Rect([l1,dir*.01]))
+        for vec in self.vectors:
+
+            if not vec.get_ouch():
+
+                if vec.get_target() >= vec.get_ang():
+                    vec.set_direction(1)
+                else:
+                    vec.set_direction(-1)
+
+                if vec.get_ang() < vec.get_target() * vec.get_direction():
+                    vec.set_ang(vec.get_ang() + vec.get_direction())
+
+
+
 
         mat  = MatRotZ((-90*np.pi)/180).dot(MatTra([50,0,0,1]))
-        mat1 = MatRotZ((dir5*np.pi)/180).dot(MatTra([50,0,0,1]))
+        mat1 = MatRotZ((self.body.get_ang()*np.pi)/180).dot(MatTra([50,0,0,1]))
 
-        mat1_1 = MatRotZ((dir*np.pi)/180).dot(MatTra([50,0,0,1]))
-        mat1_1_1 = MatRotZ((dir2*np.pi)/180).dot(MatTra([50,0,0,1]))
-        mat1_1_1_1 = MatRotZ((dir6*np.pi)/180).dot(MatTra([30,0,0,1]))
+        mat1_1     = MatRotZ((self.forearmR.get_ang()*np.pi)/180).dot(MatTra([50,0,0,1]))
+        mat1_1_1   = MatRotZ((self.armR.get_ang()*np.pi)/180).dot(MatTra([50,0,0,1]))
+       #mat1_1_1_1 = MatRotZ((dir6*np.pi)/180).dot(MatTra([30,0,0,1]))
 
-        mat1_2 = MatRotZ((dir3*np.pi)/180).dot(MatTra([50,0,0,1]))
-        mat1_2_1 = MatRotZ((dir4*np.pi)/180).dot(MatTra([50,0,0,1]))
-        mat1_2_1_1 = MatRotZ((dir7*np.pi)/180).dot(MatTra([30,0,0,1]))
+        mat1_2     = MatRotZ((self.forearmL.get_ang()*np.pi)/180).dot(MatTra([50,0,0,1]))
+        mat1_2_1   = MatRotZ((self.armL.get_ang()*np.pi)/180).dot(MatTra([50,0,0,1]))
+       #mat1_2_1_1 = MatRotZ((dir7*np.pi)/180).dot(MatTra([30,0,0,1]))
 
         mat1_3 = MatRotZ((0*np.pi)/180).dot(MatTra([50,0,0,1]))
+        mat1_3_R1 = MatRotZ((-90*np.pi)/180).dot(MatTra([30,0,0,1]))
+        mat1_3_R2 = MatRotZ((90*np.pi)/180).dot(MatTra([30,0,0,1]))
+        mat1_3_L1 = MatRotZ((90*np.pi)/180).dot(MatTra([30,0,0,1]))
+        mat1_3_L2 = MatRotZ((-90*np.pi)/180).dot(MatTra([30,0,0,1]))
+        mat1_3_H = MatRotZ((np.pi)/180).dot(MatTra([30,0,0,1]))
 
         vectest = np.matrix([0,0,0,1])
 
@@ -151,58 +283,134 @@ def main():
 
         forearm_R_end = mat.dot(mat1).dot(mat1_1).dot(np.transpose(vectest))
         arm_R_end = mat.dot(mat1).dot(mat1_1).dot(mat1_1_1).dot(np.transpose(vectest))
-        hand_R_end = mat.dot(mat1).dot(mat1_1).dot(mat1_1_1).dot(mat1_1_1_1).dot(np.transpose(vectest))
+        #hand_R_end = mat.dot(mat1).dot(mat1_1).dot(mat1_1_1).dot(mat1_1_1_1).dot(np.transpose(vectest))
 
         forearm_L_end = mat.dot(mat1).dot(mat1_2).dot(np.transpose(vectest))
         arm_L_end = mat.dot(mat1).dot(mat1_2).dot(mat1_2_1).dot(np.transpose(vectest))
-        hand_L_end = mat.dot(mat1).dot(mat1_2).dot(mat1_2_1).dot(mat1_2_1_1).dot(np.transpose(vectest))
+        #hand_L_end = mat.dot(mat1).dot(mat1_2).dot(mat1_2_1).dot(mat1_2_1_1).dot(np.transpose(vectest))
 
-        head_end = mat.dot(mat1).dot(mat1_3).dot(np.transpose(vectest))
+        neck_end = mat.dot(mat1).dot(mat1_3).dot(np.transpose(vectest))
+        headR1_end = mat.dot(mat1).dot(mat1_3).dot(mat1_3_R1).dot(np.transpose(vectest))
+        headR2_end = mat.dot(mat1).dot(mat1_3).dot(mat1_3_R1).dot(mat1_3_R2).dot(np.transpose(vectest))
+        headL1_end = mat.dot(mat1).dot(mat1_3).dot(mat1_3_L1).dot(np.transpose(vectest))
+        headL2_end = mat.dot(mat1).dot(mat1_3).dot(mat1_3_L1).dot(mat1_3_L2).dot(np.transpose(vectest))
 
-        base.set_init(np.transpose(vectest))
-        base.set_end(endpos)
-        body.set_init(endpos)
-        body.set_end(endpos2)
+        head_end = mat.dot(mat1).dot(mat1_3).dot(mat1_3_H).dot(np.transpose(vectest))
 
-        forearmR.set_init(endpos2)
-        forearmR.set_end(forearm_R_end)
-        armR.set_init(forearm_R_end)
-        armR.set_end(arm_R_end)
-        handR.set_init(arm_R_end)
-        handR.set_end(hand_R_end)
+        self.base.set_init(np.transpose(vectest))
+        self.base.set_end(endpos)
+        self.body.set_init(endpos)
+        self.body.set_end(endpos2)
 
-        forearmL.set_init(endpos2)
-        forearmL.set_end(forearm_L_end)
-        armL.set_init(forearm_L_end)
-        armL.set_end(arm_L_end)
-        handL.set_init(arm_L_end)
-        handL.set_end(hand_L_end)
+        self.forearmR.set_init(endpos2)
+        self.forearmR.set_end(forearm_R_end)
+        self.armR.set_init(forearm_R_end)
+        self.armR.set_end(arm_R_end)
+        #handR.set_init(arm_R_end)
+        #handR.set_end(hand_R_end)
 
-        head.set_init(endpos2)
-        head.set_end(head_end)
+        self.forearmL.set_init(endpos2)
+        self.forearmL.set_end(forearm_L_end)
+        self.armL.set_init(forearm_L_end)
+        self.armL.set_end(arm_L_end)
+        #handL.set_init(arm_L_end)
+        #handL.set_end(hand_L_end)
 
+        self.neck.set_init(endpos2)
+        self.neck.set_end(neck_end)
+
+        self.headR1.set_init(neck_end)
+        self.headR1.set_end(headR1_end)
+
+        self.headR2.set_init(headR1_end)
+        self.headR2.set_end(headR2_end)
+
+        self.headL1.set_init(neck_end)
+        self.headL1.set_end(headL1_end)
+
+        self.headL2.set_init(headL1_end)
+        self.headL2.set_end(headL2_end)
+
+        self.head.set_init(neck_end)
+        self.head.set_end(head_end)
 
         coord = 100
-        pygame.draw.line(screen,[255,255,255] ,[screen_width/2,screen_height/2-coord],[screen_width/2,screen_height/2+coord] ,2)
-        pygame.draw.line(screen,[255,255,255] ,[screen_width/2-coord,screen_height/2],[screen_width/2+coord,screen_height/2] ,2)
+        pygame.draw.line(self.screen,[255,255,255] ,[self.screen_width/2,self.screen_height/2-coord],[self.screen_width/2,self.screen_height/2+coord] ,2)
+        pygame.draw.line(self.screen,[255,255,255] ,[self.screen_width/2-coord,self.screen_height/2],[self.screen_width/2+coord,self.screen_height/2] ,2)
 
 
-        base.draw()
-        body.draw()
+        for vec in self.vectors:
+            if vec.get_end()[1] <= 0:
+                for vec2 in self.vectors:
+                    vec2.set_ouch(True)
+                print ("ouch!")
+                print (vec.get_ouch())
 
-        forearmR.draw()
-        armR.draw()
-        handR.draw()
+            if vec.get_range()[0] >= vec.get_ang() or vec.get_range()[1] <= vec.get_ang():
+                for vec2 in self.vectors:
+                    vec2.set_ouch(True)
+                print ("ouch! mi articulacion " + vec.get_name())
+                print (vec.get_ouch())
+                print (vec.get_ang())
+                print (vec.get_range())
 
-        forearmL.draw()
-        armL.draw()
-        handL.draw()
+                #vec.set_target(vec.get_ang())
 
-        head.draw()
+
+
+        for vec in self.vectors:
+            vec.draw()
+
+        x=0
+        #for vec in self.vectors:
+        #    print (vec.mask.overlap(vec.mask,(0,0)))
+
+        if self.armR.mask.overlap(self.armL.mask,(0,0)) != None:
+            x+=1
+
+        if self.armR.mask.overlap(self.forearmL.mask,(0,0)) != None:
+            x+=1
+
+        if self.armR.mask.overlap(self.head.mask,(0,0)) != None:
+            x+=1
+
+        if self.armR.mask.overlap(self.headL1.mask,(0,0)) != None:
+            x+=1
+
+        if self.armR.mask.overlap(self.headL2.mask,(0,0)) != None:
+            x+=1
+
+        if self.armR.mask.overlap(self.headR2.mask,(0,0)) != None:
+            x+=1
+
+        if self.armR.mask.overlap(self.headR2.mask,(0,0)) != None:
+            x+=1
+
+        if x > 0:
+            print ("ouch!")
+
+
+
 
         # and update the screen (don't forget that!)
         pygame.display.flip()
-        pygame.time.delay(10)
+        pygame.time.delay(5)
+        #self.dir += 1
+        #print(self.dir)
 
-#call the "main" function if running this script
-if __name__ == '__main__': main()
+    def get_width(self):
+        return self.screen_width
+
+    def get_height(self):
+        return self.screen_height
+
+    def get_surface(self):
+        return self.screen
+
+    #call the "main" function if running this script
+if __name__ == '__main__':
+    sc=scene()
+
+    while sc.running:
+        sc.draw()
+        pass
