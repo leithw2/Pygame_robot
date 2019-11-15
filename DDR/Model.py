@@ -31,6 +31,7 @@ class Model():
     def draw(self):
         pass
 
+
 class Collider(Model):
 
     def __init__(self,surface ,name="" ,pos=[0.0 ,0.0, 0.0 ], boundary = pygame.Rect(0, 0, 0, 0)):

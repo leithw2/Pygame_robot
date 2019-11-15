@@ -150,7 +150,7 @@ class scene():
         self.body.set_target(0)
 
         self.forearmR.set_ang(90)
-        self.forearmR.set_target(80)
+        self.forearmR.set_target(90)
         self.armR.set_ang(-90)
         self.armR.set_target(-90)
 
@@ -207,15 +207,13 @@ class scene():
 
         self.vectors.append(self.head)
 
-
         pygame.display.set_caption("Forky Robot")
 
         # main loop
 
-    def draw(self):
+    def draw(self, option):
 
         #pygame.display.flip()
-
         self.screen.fill((0,0,0))
         # event handling, gets all event from the event queue
         for event in pygame.event.get():
@@ -230,33 +228,38 @@ class scene():
 
         self.keystate = pygame.key.get_pressed()
 
-        #self.dir  += self.keystate[K_RIGHT] - self.keystate[K_LEFT]
 
         #handle player input
-        '''
-        self.dir  += self.keystate[K_RIGHT] - self.keystate[K_LEFT]
-        self.dir2 += self.keystate[K_DOWN]  - self.keystate[K_UP]
-        self.dir3 += self.keystate[K_a]     - self.keystate[K_d]
-        self.dir4 += self.keystate[K_w]     - self.keystate[K_s]
-        self.dir5 += self.keystate[K_q]     - self.keystate[K_e]
-        self.dir6 += self.keystate[K_i]     - self.keystate[K_k]
-        self.dir7 += self.keystate[K_j]     - self.keystate[K_l]
-        '''
+        if option == 0 and not self.body.get_ouch() :
 
-        for vec in self.vectors:
+            self.body.set_ang(self.body.get_ang()           + self.keystate[K_RIGHT] - self.keystate[K_LEFT])
+            self.forearmR.set_ang(self.forearmR.get_ang()   + self.keystate[K_DOWN]  - self.keystate[K_UP])
+            self.armR.set_ang(self.armR.get_ang()           + self.keystate[K_a]     - self.keystate[K_d])
+            self.forearmL.set_ang(self.forearmL.get_ang()   + self.keystate[K_w]     - self.keystate[K_s])
+            self.armL.set_ang(self.armL.get_ang()           + self.keystate[K_i]     - self.keystate[K_k])
+            #self.forearmR.set_ang(self.forearmR.get_ang() + self.keystate[K_j]     - self.keystate[K_l])
 
-            if not vec.get_ouch():
+        if option == 2 :
 
-                if vec.get_target() >= vec.get_ang():
-                    vec.set_direction(1)
-                else:
-                    vec.set_direction(-1)
+            for vec in self.vectors:
 
-                if vec.get_ang() < vec.get_target() * vec.get_direction():
-                    vec.set_ang(vec.get_ang() + vec.get_direction())
+                if not vec.get_ouch():
 
+                    if vec.get_target() >= vec.get_ang():
 
+                        vec.set_direction(1)
 
+                        if vec.get_ang() < vec.get_target() * vec.get_direction():
+                            vec.set_ang(vec.get_ang() + vec.get_direction())
+                    else:
+
+                        vec.set_direction(-1)
+
+                        if vec.get_ang() > -vec.get_target() * vec.get_direction():
+                            vec.set_ang(vec.get_ang() + vec.get_direction())
+                pass
+
+        #print (self.forearmR.get_ang(), self.forearmR.get_ang()  )
 
         mat  = MatRotZ((-90*np.pi)/180).dot(MatTra([50,0,0,1]))
         mat1 = MatRotZ((self.body.get_ang()*np.pi)/180).dot(MatTra([50,0,0,1]))
@@ -350,13 +353,9 @@ class scene():
                 for vec2 in self.vectors:
                     vec2.set_ouch(True)
                 print ("ouch! mi articulacion " + vec.get_name())
-                print (vec.get_ouch())
-                print (vec.get_ang())
-                print (vec.get_range())
-
-                #vec.set_target(vec.get_ang())
-
-
+                #print (vec.get_ouch())
+                #print (vec.get_ang())
+                #print (vec.get_range())
 
         for vec in self.vectors:
             vec.draw()
@@ -386,11 +385,10 @@ class scene():
         if self.armR.mask.overlap(self.headR2.mask,(0,0)) != None:
             x+=1
 
-        if x > 0:
+        if x > 0 and not self.armR.get_ouch()  :
             print ("ouch!")
-
-
-
+            for vec in self.vectors:
+                vec.set_ouch(True)
 
         # and update the screen (don't forget that!)
         pygame.display.flip()
@@ -410,7 +408,7 @@ class scene():
     #call the "main" function if running this script
 if __name__ == '__main__':
     sc=scene()
-
+    option = int(input("option 0 = demo; option 1 = manual"))
     while sc.running:
-        sc.draw()
+        sc.draw(option)
         pass

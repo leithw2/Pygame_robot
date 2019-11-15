@@ -33,7 +33,12 @@ class DDR(Robot):
         self.angle = 0
         self.rotate(angle)
         print (self.getName(), self.getAngle())
-        self.pastAngle = 0
+        self.dir_ang = 1
+        self.dir = 1
+        self.tarAng = self.angle
+        self.target_pos = self.pos
+        self.target_point = [0,0]
+
 
     def getEnd_line(self):
         return self.end_line
@@ -50,15 +55,40 @@ class DDR(Robot):
     def setAngle(self, ang):
         self.angle = ang
 
+    def get_target_Angle(self):
+        return self.tarAng
+
+    def set_target_Angle(self, tarAng):
+        self.tarAng = tarAng
+
+    def get_dir_ang(self):
+        return self.dir_ang
+
+    def set_dir_ang(self, dir_ang):
+        self.dir_ang = dir_ang
+
+    def get_dir(self):
+        return self.dir
+
+    def set_dir(self, dir):
+        self.dir = dir
+
     def rotate(self,ang):
         if ang != 0:
             self.end_line = Rotz(self.end_line, ang )
             self.setAngle(self.getAngle() + ang)
 
+    def rotateq(self,ang):
+        if ang != 0:
+            q = np.matrix([np.cos(ang/2), 0, 0, np.sin(ang/2)])
+            p = np.matrix([1,self.end_line.item(0), self.end_line.item(1), 0])
+            self.end_line = R_quaternion(q, p)
+            self.setAngle(self.getAngle() + ang)
+
     def forward(self, speed):
         if speed != 0:
             vector = Rotz([speed,0,0,1], self.getAngle())
-            #print (self.getName(),  self.getAngle())
+
             self.pos = translation(self.getPos(), vector)
 
     def draw(self):
@@ -70,3 +100,12 @@ class DDR(Robot):
         pygame.draw.circle(self.surface, self.color,[int(position.item(0)), int(position.item(1)) ], self.radious)
         pygame.draw.line(self.surface,[0,0,0] , [position.item(0), position.item(1) ], end_line_draw ,3)
         return True
+
+    def get_target_pos(self):
+        return self.target_pos
+
+    def set_target_pos(self, target_pos):
+        self.target_pos = target_pos
+
+    def set_target_point(self, target_point):
+        self.target_point = target_point

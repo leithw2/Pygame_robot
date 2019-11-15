@@ -123,7 +123,7 @@ def translation(mat, vec):
                     [0,0,0,  1   ]])
 
     res = np.transpose(Hs.dot(np.transpose(mat)))
-    #print (res)
+
     return res
 
 def translation2(mat, ang, vec):
@@ -141,24 +141,50 @@ def translation2(mat, ang, vec):
                      [0,0,0,       1   ]])
 
     Hs3 = Hs2.dot(Hs)
-    #print(Hs3)
+
     Hs3 = Hs2
 
     res = np.transpose(Hs3.dot(mat))
-    #print (res)
+
     return res
 
 def prod_Hamilton(a, b):
 
-    res = [(a[0]*b[0] - a[1]*b[1] - a[2]*b[2] - a[3]*b[3]),
-           (a[0]*b[1] + a[1]*b[0] + a[2]*b[3] + a[3]*b[2]),
-           (a[0]*b[2] - a[1]*b[3] + a[2]*b[0] + a[3]*b[1]),
-           (a[0]*b[3] + a[1]*b[2] - a[2]*b[1] + a[3]*b[0])]
-
+    res = np.matrix([(a.item(0)*b.item(0) - a.item(1)*b.item(1) - a.item(2)*b.item(2) - a.item(3)*b.item(3)),
+                     (a.item(0)*b.item(1) + a.item(1)*b.item(0) + a.item(2)*b.item(3) - a.item(3)*b.item(2)),
+                     (a.item(0)*b.item(2) - a.item(1)*b.item(3) + a.item(2)*b.item(0) + a.item(3)*b.item(1)),
+                     (a.item(0)*b.item(3) + a.item(1)*b.item(2) - a.item(2)*b.item(1) + a.item(3)*b.item(0))])
     return res
 
 def R_quaternion(q, p):
 
-    q_1 = [q[0], -q[1], -q[2], -q[3]]
+    q_1 = np.matrix([q.item(0), -q.item(1), -q.item(2), -q.item(3)])
     res1 = prod_Hamilton(q, p)
     res = prod_Hamilton(res1, q_1)
+
+    return np.matrix([res.item(1),res.item(2),0,1])
+
+def line_slop(point1,point2):
+
+    upper = point2[1] - point1[1]
+    lower = point2[0] - point1[0]
+
+    if lower == 0 and upper > 0:
+        res = 99999999
+
+    if lower == 0 and upper == 0:
+        res = 0
+
+    if lower == 0 and upper < 0:
+        res = -99999999
+
+    if lower != 0:
+        res = upper/lower
+
+    return res
+
+def dis_Between(point1,point2):
+
+    x = point2[0] - point1[0]
+    y = point2[1] - point1[1]
+    return np.sqrt(x**2 + y**2)
