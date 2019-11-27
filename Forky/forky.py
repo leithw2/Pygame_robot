@@ -210,8 +210,27 @@ class scene():
         pygame.display.set_caption("Forky Robot")
 
         # main loop
+        self.done = True
 
-    def draw(self, option):
+        self.option = int(input("option 0 = demo; option 1 = manual"))
+
+        if self.option == 1 and self.done:
+
+            optionbody = int(input("Angulo del torso en grados: "))
+            optionforearmR = int(input("Angulo del brazo derecho en grados:"))+90
+            optionarmR = int(input("Angulo del antebrazo derecho en grados:"))-90
+            optionforearmL = int(input("Angulo del brazo izquierdo en grados:"))-90
+            optionarmL = int(input("Angulo del antebrazo izquierdo en grados:"))+90
+
+            self.body.set_target(optionbody)
+            self.forearmR.set_target(optionforearmR)
+            self.armR.set_target(optionarmR)
+            self.forearmL.set_target(optionforearmL)
+            self.armL.set_target(optionarmL)
+
+            self.done = False
+
+    def draw(self):
 
         #pygame.display.flip()
         self.screen.fill((0,0,0))
@@ -228,9 +247,8 @@ class scene():
 
         self.keystate = pygame.key.get_pressed()
 
-
         #handle player input
-        if option == 0 and not self.body.get_ouch() :
+        if self.option == 0 and not self.body.get_ouch() :
 
             self.body.set_ang(self.body.get_ang()           + self.keystate[K_RIGHT] - self.keystate[K_LEFT])
             self.forearmR.set_ang(self.forearmR.get_ang()   + self.keystate[K_DOWN]  - self.keystate[K_UP])
@@ -239,7 +257,9 @@ class scene():
             self.armL.set_ang(self.armL.get_ang()           + self.keystate[K_i]     - self.keystate[K_k])
             #self.forearmR.set_ang(self.forearmR.get_ang() + self.keystate[K_j]     - self.keystate[K_l])
 
-        if option == 2 :
+
+
+        if self.option == 1 :
 
             for vec in self.vectors:
 
@@ -408,7 +428,6 @@ class scene():
     #call the "main" function if running this script
 if __name__ == '__main__':
     sc=scene()
-    option = int(input("option 0 = demo; option 1 = manual"))
     while sc.running:
-        sc.draw(option)
+        sc.draw()
         pass

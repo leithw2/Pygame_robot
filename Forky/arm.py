@@ -126,6 +126,13 @@ class scene():
         self.body     = vector_coordinate(self.screen, [0,255,255], [0,50], [0,100], "body")
         self.neck     = vector_coordinate(self.screen, [255,0,0], [0, 0], [0,30],"head")
 
+        self.vectors = []
+        self.vectors.append(self.base)
+
+        self.vectors.append(self.body)
+
+        self.vectors.append(self.neck)
+
         #self.rect = pygame.rect()
         self.vectors = []
 
@@ -153,6 +160,15 @@ class scene():
 
         pygame.display.set_caption("Forky Robot")
 
+        option1 = int(input("Angulo 1 : "))
+        option2 = int(input("Angulo 2 : "))
+        option3 = int(input("Angulo 3 : "))
+
+        self.base.set_target(-option1)
+        self.body.set_target(-option2)
+        self.neck.set_target(-option3)
+
+        self.font = pygame.font.Font('freesansbold.ttf', 14)
         # main loop
 
     def draw(self):
@@ -170,11 +186,29 @@ class scene():
                 self.running = False
             #print(event.type)
 
+        for vec in self.vectors:
+
+            if True:
+
+                if vec.get_target() >= vec.get_ang():
+
+                    vec.set_direction(1)
+
+                    if vec.get_ang() < vec.get_target() * vec.get_direction():
+                        vec.set_ang(vec.get_ang() + vec.get_direction())
+                else:
+
+                    vec.set_direction(-1)
+
+                    if vec.get_ang() > -vec.get_target() * vec.get_direction():
+                        vec.set_ang(vec.get_ang() + vec.get_direction())
+
+
         self.keystate = pygame.key.get_pressed()
 
-        self.base.set_ang(self.base.get_ang()           + self.keystate[K_RIGHT] - self.keystate[K_LEFT])
-        self.body.set_ang(self.body.get_ang()           + self.keystate[K_UP] - self.keystate[K_DOWN])
-        self.neck.set_ang(self.neck.get_ang()           + self.keystate[K_a] - self.keystate[K_d])
+        #self.base.set_ang(self.base.get_ang()           + self.keystate[K_RIGHT] - self.keystate[K_LEFT])
+        #self.body.set_ang(self.body.get_ang()           + self.keystate[K_UP] - self.keystate[K_DOWN])
+        #self.neck.set_ang(self.neck.get_ang()           + self.keystate[K_a] - self.keystate[K_d])
 
         mat  = MatRotZ((self.base.get_ang()*np.pi)/180).dot(MatTra([50,0,0,1]))
         mat1 = MatRotZ((self.body.get_ang()*np.pi)/180).dot(MatTra([50,0,0,1]))
@@ -203,6 +237,12 @@ class scene():
 
         for vec in self.vectors:
             vec.draw()
+
+        fonts = self.font.render("End point : " + str(vec.get_end().item(0)) + " " +str(vec.get_end().item(1)), True, [0,255,0])
+
+        rectangle = fonts.get_rect().move([0,100])
+
+        self.screen.blit(fonts, rectangle)
 
         pygame.display.flip()
         pygame.time.delay(5)

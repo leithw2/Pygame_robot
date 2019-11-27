@@ -166,8 +166,8 @@ def R_quaternion(q, p):
 
 def line_slop(point1,point2):
 
-    upper = point2[1] - point1[1]
-    lower = point2[0] - point1[0]
+    upper = point2.item(1) - point1.item(1)
+    lower = point2.item(0) - point1.item(0)
 
     if lower == 0 and upper > 0:
         res = 99999999
