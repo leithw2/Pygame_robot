@@ -51,7 +51,7 @@ class Point(Model):
         pygame.draw.circle(self.getSurface(), self.getColor(), center, 2)
 
 class LaserLine(Model):
-    def __init__(self, surface, pos, angle, radious, distance = 50 , step = 5):
+    def __init__(self, surface, pos, angle, radious, distance = 200 , step = 10):
         name=("sensor a ",angle * 180/np.pi, " grados")
         Model.__init__(self,surface ,name ,pos)
         self.color = [0,255,0]
@@ -88,16 +88,15 @@ class LaserLine(Model):
             #print (self.radious, self.distance + self.radious, self.step)
             for collider in colliders:
                 self.collidePoint = [self.getPos().item(0) + (self.getDir()[0] * trace)   , self.getPos().item(1) + (self.getDir()[1] * trace) ]
-                pygame.draw.circle(self.getSurface(), self.getColor(), [int(self.collidePoint[0] + self.getSurface().get_width()/2 ),int(self.collidePoint[1] + self.getSurface().get_height()/2)], 2)
-
                 if collider.collidepoint(self.collidePoint):
                     self.distValue = -self.radious + dis_Between([self.getPos().item(0),self.getPos().item(1)], self.collidePoint)
-                    #pygame.draw.circle(self.getSurface(), self.getColor(), [int(checkpoint[0] + self.getSurface().get_width()/2 ),int(checkpoint[1] + self.getSurface().get_height()/2)], 2)
+                    pygame.draw.circle(self.getSurface(), [255,0,0], [int(self.collidePoint[0] + self.getSurface().get_width()/2 ),int(self.collidePoint[1] + self.getSurface().get_height()/2)], 2)
                     return self.collidePoint
                 else:
-                    self.distValue = self.distance
+                    self.distValue = 1000
+                    pygame.draw.circle(self.getSurface(), self.getColor(), [int(self.collidePoint[0] + self.getSurface().get_width()/2 ),int(self.collidePoint[1] + self.getSurface().get_height()/2)], 2)
 
-        return [self.distance, self.distance]
+        return [1000, 1000]
 
     def update(self,ParentAngle,ParentPos ):
         self.setDir( [np.cos(ParentAngle + self.getAngle()), np.sin(ParentAngle + self.getAngle())] )

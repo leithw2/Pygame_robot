@@ -183,6 +183,25 @@ def line_slop(point1,point2):
 
     return res
 
+def line_slop2(point1,point2):
+
+    upper = point2[1] - point1[1]
+    lower = point2[0] - point1[0]
+
+    if lower == 0 and upper > 0:
+        res = 99999999
+
+    if lower == 0 and upper == 0:
+        res = 0
+
+    if lower == 0 and upper < 0:
+        res = -99999999
+
+    if lower != 0:
+        res = upper/lower
+
+    return res
+
 def dis_Between(point1,point2):
 
     x = point2[0] - point1[0]

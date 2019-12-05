@@ -13,8 +13,8 @@ class controlBug1():
         self.lidar = lidar
         self.configs = []
         self.initConfig = self.ddr.config
-        self.firstConf = []
-        self.closestConf = []
+        self.firstConfig = []
+        self.closestConf = dis_Between(self.ddr.get_posxy(), qGoal.get_posxy())
         self.distToGoal = dis_Between(self.ddr.get_posxy(), qGoal.get_posxy())
         self.circumnavigating = False
         self.movingToGoal = False
@@ -148,23 +148,23 @@ class controlBug1():
 
 
         if self.stateMachine2 == 0:
-            if self.ddr.getBoundary().collidepoint(self.getFirstConf()[0]):
+            if self.ddr.getBoundary().collidepoint(self.getfirstConfig()[0]):
                 pass
                 #print ("vuelta completa!!!")
             else:
-                print ("Deja el primero")
+                #print ("Deja el primero")
                 self.stateMachine2 = 1
 
         if self.stateMachine2 == 1:
-            if self.ddr.getBoundary().collidepoint(self.getFirstConf()[0]):
-                print ("Regreso")
-                self.minDistance = dis_Between(self.getFirstConf()[0], self.qGoal.get_posxy())
+            if self.ddr.getBoundary().collidepoint(self.getfirstConfig()[0]):
+                #print ("Regreso")
+                self.minDistance = dis_Between(self.getfirstConfig()[0], self.qGoal.get_posxy())
 
                 for snap in self.snapShots:
                     dis = dis_Between(snap, self.qGoal.get_posxy())
                     if dis < self.minDistance:
                         self.minDistance =  dis
-                        print (dis)
+                        #print (dis)
                         self.closestConf = snap
 
                 self.stateMachine2 = 2
@@ -174,7 +174,7 @@ class controlBug1():
             if self.ddr.getBoundary().collidepoint(self.closestConf):
                 self.circumnavigating = False
                 #self.movingToGoal = True
-                print("closestReach")
+                #print("closestReach")
                 self.stateMachine2 == 0
 
     def moveToGoal(self):
@@ -182,13 +182,13 @@ class controlBug1():
             self.movingToGoal = True
             self.ddr.moveto(self.qGoal.getPos(),0)
             self.ddr.setStop(False)
-            print("movingToGoal")
+            #print("movingToGoal")
 
-    def setFirstConf(self,firstConf):
-        self.firstConf = firstConf
+    def setfirstConfig(self,firstConfig):
+        self.firstConfig = firstConfig
 
-    def getFirstConf(self):
-        return self.firstConf
+    def getfirstConfig(self):
+        return self.firstConfig
 
     def setClosestConf(self, closestConf):
         self.closestConf = closestConf
@@ -203,9 +203,9 @@ class controlBug1():
         self.ddr.update()
         self.lidar.update()
         if self.ddr.getBoundary().collidepoint(self.qGoal.get_posxy()):
-            print("Fin")
+            #print("Fin")
             return
-        if self.ddr.distanceTravel > 50 * self.step:
+        if self.ddr.distanceTravel > 10 * self.step:
             self.step += 1
             self.snapShots.append(self.ddr.config[0])
             #print(dis_Between(self.ddr.config[0], self.qGoal.get_posxy()))
@@ -216,7 +216,7 @@ class controlBug1():
             if self.lidar.getCloseSensorDist() < 20:
 
                 self.ddr.setStop(True)
-                self.setFirstConf(self.ddr.config)
+                self.setfirstConfig(self.ddr.config)
                 self.circumnavigating = True
                 self.movingToGoal = False
         else:
@@ -236,9 +236,9 @@ class controlBug1():
             pygame.draw.rect(surface,[255,0,0], pygame.Rect(drawInit, [self.ddr.getBoundary().width,self.ddr.getBoundary().height]), 1)
 
             #pygame.draw.circle(surface, [255,0,0], center, 2)
-        if self.getFirstConf() != []:
+        if self.getfirstConfig() != []:
 
-            center = [int(surface.get_width()/2 +self.getFirstConf()[0][0]), int(surface.get_height()/2 + self.getFirstConf()[0][1])]
+            center = [int(surface.get_width()/2 +self.getfirstConfig()[0][0]), int(surface.get_height()/2 + self.getfirstConfig()[0][1])]
             pygame.draw.circle(surface, [0,255,255], center, 3)
 
 
@@ -255,14 +255,16 @@ class controlBug2():
         self.lidar = lidar
         self.configs = []
         self.initConfig = self.ddr.config
-        self.firstConf = []
-        self.closestConf = []
+        self.firstConfig = []
+        self.firstSlope = line_slop2(self.initConfig[0], self.qGoal.get_posxy())
+        self.firstSlopeConfig = []
+        self.closestConf = self.ddr.config
         self.distToGoal = dis_Between(self.ddr.get_posxy(), qGoal.get_posxy())
         self.circumnavigating = False
         self.movingToGoal = False
         self.rotating = False
         self.dispacing = False
-        self.rotatingStep = 19
+        self.rotatingStep = 16
         self.step = 1
         self.sensor1 = False
         self.sensor2 = False
@@ -303,13 +305,13 @@ class controlBug2():
             else:
                 self.lidar.getBoundary()[0].setColor([0,255,0])
 
-            if self.lidar.getBoundary()[1].distValue < self.lidar.getBoundary()[1].distance -10:
+            if self.lidar.getBoundary()[1].distValue < self.lidar.getBoundary()[1].distance -0:
                 self.sensor2 = True
                 self.lidar.getBoundary()[1].setColor([255,255,0])
             else:
                 self.lidar.getBoundary()[1].setColor([0,255,0])
 
-            if self.lidar.getBoundary()[2].distValue < self.lidar.getBoundary()[2].distance -00:
+            if self.lidar.getBoundary()[2].distValue < self.lidar.getBoundary()[2].distance -10:
                 self.sensor3 = True
                 self.lidar.getBoundary()[2].setColor([255,255,0])
             else:
@@ -390,35 +392,36 @@ class controlBug2():
 
 
         if self.stateMachine2 == 0:
-            # if self.ddr.getBoundary().collidepoint(self.getFirstConf()[0]):
-            #     pass
-            #     #print ("vuelta completa!!!")
-            # else:
-            #     print ("Deja el primero")
-            #     self.stateMachine2 = 1
+            slope = line_slop2(self.ddr.get_posxy(), self.qGoal.get_posxy())
+            if abs(self.firstSlope - slope) <= .1:
+
+                #print ("First slope Found")
+                #print ("Actual: ", slope, "First: ", self.firstSlope, "diference: ", self.firstSlope - slope )
+                self.firstSlopeConfig = self.ddr.config
+
+                pass
+            else:
+                #print ("Left first slope")
+                self.stateMachine2 = 1
             pass
 
         if self.stateMachine2 == 1:
-            if self.ddr.getBoundary().collidepoint(self.getFirstConf()[0]):
-                print ("Regreso")
-                self.minDistance = dis_Between(self.getFirstConf()[0], self.qGoal.get_posxy())
+            slope = line_slop2(self.ddr.get_posxy(), self.qGoal.get_posxy())
+            #print (abs(self.firstSlope - slope))
 
-                for snap in self.snapShots:
-                    dis = dis_Between(snap, self.qGoal.get_posxy())
-                    if dis < self.minDistance:
-                        self.minDistance =  dis
-                        print (dis)
-                        self.closestConf = snap
+            if abs(self.firstSlope - slope) <= 0.1 :
+                #print ("New slope found ",self.firstSlopeConfig)
+                firstDistToGoal = dis_Between(self.firstSlopeConfig[0], self.qGoal.get_posxy())
+                actualDistance = dis_Between(self.ddr.get_posxy(), self.qGoal.get_posxy())
 
-                self.stateMachine2 = 2
+                if firstDistToGoal > actualDistance:
+                    self.minDistance =  actualDistance
+                    #print (actualDistance)
+                    self.closestConf = self.ddr.config
+                    self.stateMachine2 = 0
+                    self.circumnavigating = False
+                    print("closestReach")
 
-        if self.stateMachine2 == 2:
-
-            if self.ddr.getBoundary().collidepoint(self.closestConf):
-                self.circumnavigating = False
-                #self.movingToGoal = True
-                print("closestReach")
-                self.stateMachine2 == 0
 
     def moveToGoal(self):
         if not self.isMovingToGoal():
@@ -427,11 +430,11 @@ class controlBug2():
             self.ddr.setStop(False)
             print("movingToGoal")
 
-    def setFirstConf(self,firstConf):
-        self.firstConf = firstConf
+    def setfirstConfig(self,firstConfig):
+        self.firstConfig = firstConfig
 
-    def getFirstConf(self):
-        return self.firstConf
+    def getfirstConfig(self):
+        return self.firstConfig
 
     def setClosestConf(self, closestConf):
         self.closestConf = closestConf
@@ -456,10 +459,11 @@ class controlBug2():
         if not self.isCircumnavigating():
             self.moveToGoal()
 
-            if self.lidar.getCloseSensorDist() < 20:
+
+            if self.lidar.getCloseSensorDist() < 20 and dis_Between(self.closestConf[0], self.ddr.get_posxy()) > 30:
 
                 self.ddr.setStop(True)
-                self.setFirstConf(self.ddr.config)
+                self.setfirstConfig(self.ddr.config)
                 self.circumnavigating = True
                 self.movingToGoal = False
         else:
@@ -483,7 +487,7 @@ class controlBug2():
             pygame.draw.rect(surface,[255,0,0], pygame.Rect(drawInit, [self.ddr.getBoundary().width,self.ddr.getBoundary().height]), 1)
 
             #pygame.draw.circle(surface, [255,0,0], center, 2)
-        if self.getFirstConf() != []:
+        if self.getfirstConfig() != []:
 
-            center = [int(surface.get_width()/2 +self.getFirstConf()[0][0]), int(surface.get_height()/2 + self.getFirstConf()[0][1])]
+            center = [int(surface.get_width()/2 +self.getfirstConfig()[0][0]), int(surface.get_height()/2 + self.getfirstConfig()[0][1])]
             pygame.draw.circle(surface, [0,255,255], center, 3)
